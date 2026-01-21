@@ -207,24 +207,23 @@ function getRandomTypo(char){
 function createHearts() {
     const heartCount = 50;
     const hearts = [];
-    const stacks = []; // track ground height per horizontal "column"
+    const stacks = [];
 
     for (let i = 0; i < heartCount; i++) {
         const heart = document.createElement('div');
         heart.className = 'heart';
 
-        // Assign left mostly on sides
         let left;
-        if(i%2===0) left = Math.random()*15; // left side
-        else if(i%3===0) left = 85+Math.random()*15; // right side
-        else left = 20+Math.random()*60; // middle less
+        if(i%2===0) left = Math.random()*15;
+        else if(i%3===0) left = 85+Math.random()*15;
+        else left = 20+Math.random()*60; 
         heart.style.left = left + '%';
 
-        // scale
+   
         const scale = 0.6 + Math.random()*0.4;
         heart.style.transform = `rotate(-45deg) scale(${scale})`;
 
-        // initial top
+        
         let y = -50 - Math.random()*200;
 
         document.body.appendChild(heart);
@@ -244,17 +243,17 @@ function createHearts() {
     function animate() {
         hearts.forEach(h => {
             if(!h.landed){
-                // fall
+               
                 h.y += h.vy;
-                h.vy += 0.05; // gravity
+                h.vy += 0.05;
 
-                // drift
+               
                 h.x += h.drift;
 
-                // find landing height
+                
                 let ground = window.innerHeight - 40*h.scale;
 
-                // check for pile
+                
                 stacks.forEach(s => {
                     if(Math.abs(s.left - h.leftPercent)<5){
                         if(ground > s.y) ground = s.y;
@@ -264,13 +263,13 @@ function createHearts() {
                 if(h.y >= ground){
                     h.y = ground;
 
-                    // single bounce
+                    
                     if(h.vy > 0){
                         h.vy = -h.vy*0.4;
                     } else {
                         h.vy = 0;
                         h.landed = true;
-                        stacks.push({left:h.leftPercent, y:h.y - 2}); // next heart can stack on this
+                        stacks.push({left:h.leftPercent, y:h.y - 2});
                     }
                 }
 
@@ -300,3 +299,4 @@ introOverlay.addEventListener('click',()=>{
 </script>
 </body>
 </html>
+
