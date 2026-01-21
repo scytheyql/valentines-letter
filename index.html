@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentines Letter ngaun</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #add8e6;
+    font-family: 'Courier New', monospace;
+    color: #5f9ea0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    position: relative;
+}
+
+.image-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(14, 59, 109, 0.226);
+    backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.intro-text {
+    font-size: 36px;
+    color: #5f9ea0;
+    text-shadow: 0 0 5px rgba(173,216,230,0.5),0 0 10px rgba(0,191,255,0.3);
+    -webkit-text-stroke:0.5px rgba(255,255,255,0.2);
+    text-align:center;
+}
+
+.dark-overlay {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background-color:rgba(5,2,150,0.171);
+    z-index:1;
+}
+
+.text-box {
+    position:relative;
+    background-color: rgba(1,21,109,0.199);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 600px;
+    text-align: center;
+    z-index: 2;
+    box-shadow: 0 0 20px rgba(173,216,230,0.2);
+    display:none;
+    transition: transform 0.1s ease;
+}
+
+.text-box.shake {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%,100%{transform:translateX(0);}
+    10%,30%,50%,70%,90%{transform:translateX(-5px);}
+    20%,40%,60%,80%{transform:translateX(5px);}
+}
+
+.typewriter {
+    font-size:24px;
+    line-height:1.5;
+    color:#5f9ea0;
+    text-shadow:0 0 5px rgba(173,216,230,0.5),0 0 10px rgba(0,191,255,0.3);
+    -webkit-text-stroke:0.5px rgba(255,255,255,0.2);
+    position:relative;
+}
+
+.typewriter::after {
+    content:'|';
+    animation: blink 1s infinite;
+    color:#5f9ea0;
+    text-shadow:0 0 5px rgba(173,216,230,0.5);
+    -webkit-text-stroke:0.5px rgba(255,255,255,0.2);
+}
+
+@keyframes blink {
+    0%,50%{opacity:1;}
+    51%,100%{opacity:0;}
+}
+
+.selection {
+    background-color:#b0e0e6;
+    color:black;
+    padding:0 2px;
+    border-radius:2px;
+}
+
+/* Heart CSS */
+.heart {
+    position: absolute;
+    width: 40px;
+    height: 36px;
+    background: #1e90ff;
+    transform: rotate(-45deg);
+    border-radius: 10px;
+    z-index: 2;
+}
+
+.heart::before,
+.heart::after {
+    content: "";
+    position: absolute;
+    width: 40px;
+    height: 36px;
+    background: #1e90ff;
+    border-radius: 50%;
+}
+
+.heart::before { top:-20px; left:0; }
+.heart::after { left:20px; top:0; }
+</style>
+</head>
+<body>
+
+<video class="image-bg" autoplay muted playsinline loop>
+    <source src="bgvideo.mp4" type="video/mp4">
+</video>
+
+<div class="dark-overlay"></div>
+
+<audio id="bg-music" loop>
+    <source src="bgmusic.mp3" type="audio/mpeg">
+</audio>
+
+<div class="intro-overlay" id="intro-overlay">
+    <div class="intro-text">Click to Open</div>
+</div>
+
+<div class="text-box" id="text-box">
+    <div id="typewriter-text" class="typewriter"></div>
+</div>
+
+<script>
+const text = `hello!! good afternoon, morning, or evening, whenever you opened this letter.. just for you! I might've borrowed some code from my last one, but it's okay.. I still put in a lot of effort in this, maybe stayed up a night to fix everything, I tried my best! because I love you, even if we had that miscommunication that one time, even if I thought you didn't like me, deep down, I liked you still, even if I told others something else. It always rested at the back of my mind, thinking about a lot of things.. but even if my mind is always stuffed, theres always room for you, I always think abobut you, I honestly can't see myself with another girl in the future besides for you, anyhow.. happy valentines! I hope you enjoy the gifts you got given, especially the chocolates, I'm making this very early. lets see if I give you anything besides for this.. I LOOVEEE YOUU! <3`;
+
+const typewriterElement = document.getElementById('typewriter-text');
+const introOverlay = document.getElementById('intro-overlay');
+const textBox = document.getElementById('text-box');
+const bgMusic = document.getElementById('bg-music');
+let index = 0;
+let isCorrecting = false;
+
+bgMusic.volume = 0.5;
+
+function typeWriter() {
+    if(index < text.length){
+        const char = text.charAt(index);
+        if(!isCorrecting && Math.random()<0.02 && char.match(/[a-zA-Z]/)){
+            isCorrecting = true;
+            const wrongChar = getRandomTypo(char);
+            typewriterElement.innerHTML += `<span class="selection">${wrongChar}</span>`;
+            setTimeout(()=>{
+                typewriterElement.innerHTML = typewriterElement.innerHTML.replace(
+                    `<span class="selection">${wrongChar}</span>`,''
+                );
+                setTimeout(()=>{
+                    typewriterElement.innerHTML += char;
+                    index++;
+                    isCorrecting=false;
+                    setTimeout(typeWriter,50);
+                },200);
+            },300);
+        }else{
+            typewriterElement.innerHTML += char;
+            index++;
+            setTimeout(typeWriter,50);
+        }
+    }
+}
+
+function getRandomTypo(char){
+    const typos = { 'a':'s','s':'a','e':'r','r':'e','t':'y','y':'t','i':'o','o':'i','n':'m','m':'n','h':'j','j':'h'};
+    return typos[char.toLowerCase()] || char;
+}
+
+// --- HEART SYSTEM WITH REAL BOTTOM STACKING ---
+function createHearts() {
+    const heartCount = 50;
+    const hearts = [];
+    const stacks = []; // track ground height per horizontal "column"
+
+    for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'heart';
+
+        // Assign left mostly on sides
+        let left;
+        if(i%2===0) left = Math.random()*15; // left side
+        else if(i%3===0) left = 85+Math.random()*15; // right side
+        else left = 20+Math.random()*60; // middle less
+        heart.style.left = left + '%';
+
+        // scale
+        const scale = 0.6 + Math.random()*0.4;
+        heart.style.transform = `rotate(-45deg) scale(${scale})`;
+
+        // initial top
+        let y = -50 - Math.random()*200;
+
+        document.body.appendChild(heart);
+
+        hearts.push({
+            el: heart,
+            x: heart.offsetLeft,
+            y: y,
+            vy: 1 + Math.random()*1.5,
+            drift: (Math.random()*0.6 - 0.3),
+            scale: scale,
+            landed: false,
+            leftPercent: left
+        });
+    }
+
+    function animate() {
+        hearts.forEach(h => {
+            if(!h.landed){
+                // fall
+                h.y += h.vy;
+                h.vy += 0.05; // gravity
+
+                // drift
+                h.x += h.drift;
+
+                // find landing height
+                let ground = window.innerHeight - 40*h.scale;
+
+                // check for pile
+                stacks.forEach(s => {
+                    if(Math.abs(s.left - h.leftPercent)<5){
+                        if(ground > s.y) ground = s.y;
+                    }
+                });
+
+                if(h.y >= ground){
+                    h.y = ground;
+
+                    // single bounce
+                    if(h.vy > 0){
+                        h.vy = -h.vy*0.4;
+                    } else {
+                        h.vy = 0;
+                        h.landed = true;
+                        stacks.push({left:h.leftPercent, y:h.y - 2}); // next heart can stack on this
+                    }
+                }
+
+                h.el.style.top = h.y + 'px';
+                h.el.style.left = h.x + 'px';
+            }
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+}
+
+document.addEventListener('visibilitychange',()=>{if(document.hidden) bgMusic.pause();});
+window.addEventListener('beforeunload',()=>{bgMusic.pause();});
+
+introOverlay.addEventListener('click',()=>{
+    introOverlay.style.display='none';
+    textBox.style.display='block';
+    textBox.classList.add('shake');
+    setTimeout(()=>textBox.classList.remove('shake'),500);
+    bgMusic.play();
+    typeWriter();
+    createHearts();
+});
+</script>
+</body>
+</html>
