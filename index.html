@@ -287,11 +287,10 @@ function getDarkerColor(color) {
 }
 
 function createHearts() {
-    const heartCount = 50;
+    const heartCount = window.innerWidth <= 768 ? 20 : 30;
     const hearts = [];
     const stacks = [];
     const sparkles = [];
-    const trails = [];
 
     for (let i = 0; i < heartCount; i++) {
         const heart = document.createElement('div');
@@ -315,11 +314,9 @@ function createHearts() {
         else left = 20+Math.random()*60; 
         heart.style.left = left + '%';
 
-   
         const scale = 0.6 + Math.random()*0.4;
         heart.style.transform = `rotate(-45deg) scale(${scale})`;
 
-        
         let y = -50 - Math.random()*200;
 
         document.body.appendChild(heart);
@@ -339,48 +336,35 @@ function createHearts() {
             rollSpeed: 0.5 + Math.random() * 0.5,
             rotation: -45,
             rollTime: 0,
-            sparkleTimer: 0,
-            trail: null
+            sparkleTimer: 0
         });
     }
 
     function createSparkles(heart) {
-        for (let j = 0; j < 4; j++) {
+        for (let j = 0; j < 1; j++) {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
             sparkle.style.left = (heart.x + Math.random() * 70 - 35) + 'px';
             sparkle.style.top = (heart.y + Math.random() * 63 - 31.5) + 'px';
             document.body.appendChild(sparkle);
-            sparkles.push({ el: sparkle, life: 60 });
+            sparkles.push({ el: sparkle, life: 30 });
         }
     }
 
     function createSparks(x, y) {
-        for (let j = 0; j < 5; j++) {
+        for (let j = 0; j < 2; j++) {
             const spark = document.createElement('div');
             spark.className = 'spark';
             spark.style.left = (x + Math.random() * 20 - 10) + 'px';
             spark.style.top = (y + Math.random() * 10) + 'px';
             document.body.appendChild(spark);
-            setTimeout(() => spark.remove(), 500);
+            setTimeout(() => spark.remove(), 300);
         }
-    }
-
-    function createTrail(heart) {
-        if (!heart.trail) {
-            const trail = document.createElement('div');
-            trail.className = 'trail';
-            trail.style.setProperty('--heart-color', heart.el.style.getPropertyValue('--heart-color'));
-            trail.style.setProperty('--darker-color', heart.el.style.getPropertyValue('--darker-color'));
-            document.body.appendChild(trail);
-            heart.trail = trail;
-        }
-        heart.trail.style.left = heart.x + 'px';
-        heart.trail.style.top = heart.y + 'px';
-        heart.trail.style.transform = `rotate(${heart.rotation}deg) scale(${heart.scale})`;
     }
 
     function animate() {
+        if (hearts.length === 0) return;
+
         sparkles.forEach((s, idx) => {
             s.life--;
             if (s.life <= 0) {
@@ -390,27 +374,25 @@ function createHearts() {
         });
 
         hearts.forEach(h => {
-            const pulse = Math.sin(Date.now() * 0.005) * 0.01;
-            h.scale += pulse;
+            if (window.innerWidth > 768) {
+                const pulse = Math.sin(Date.now() * 0.005) * 0.005;
+                h.scale += pulse;
+            }
 
             h.sparkleTimer++;
-            if (h.sparkleTimer > 30) {
+            if (h.sparkleTimer > 90) {
                 createSparkles(h);
                 h.sparkleTimer = 0;
             }
 
             if(!h.landed){
-               
                 h.y += h.vy;
                 h.vy += 0.05;
 
-               
                 h.x += h.drift;
 
-                
                 let ground = window.innerHeight - (window.innerWidth <= 768 ? 45 : 63) * h.scale;
 
-                
                 stacks.forEach(s => {
                     if(Math.abs(s.left - h.leftPercent)<5){
                         if(ground > s.y) ground = s.y;
@@ -419,9 +401,8 @@ function createHearts() {
 
                 if(h.y >= ground){
                     h.y = ground;
-                    createSparks(h.x, h.y);
+                    if (window.innerWidth > 768) createSparks(h.x, h.y);
 
-                    
                     if(h.vy > 0){
                         h.vy = -h.vy*0.7;
                         h.bounceCount++;
@@ -466,7 +447,6 @@ function createHearts() {
                     h.el.style.opacity = Math.max(0, parseFloat(h.el.style.opacity) - 0.01);
                     if (h.el.style.opacity <= 0) {
                         h.el.remove();
-                        if (h.trail) h.trail.remove();
                         hearts.splice(hearts.indexOf(h), 1);
                     }
                 }
@@ -475,8 +455,6 @@ function createHearts() {
                 h.el.style.top = h.y + 'px';
                 h.el.style.transform = `rotate(${h.rotation}deg) scale(${h.scale})`;
             }
-
-            createTrail(h);
         });
 
         requestAnimationFrame(animate);
@@ -500,4 +478,5 @@ introOverlay.addEventListener('click',()=>{
 </script>
 </body>
 </html>
+
 
