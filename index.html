@@ -115,11 +115,11 @@ body {
     border-radius:2px;
 }
 
-/* Heart CSS */
+/* Heart CSS - Made slightly bigger */
 .heart {
     position: absolute;
-    width: 40px;
-    height: 36px;
+    width: 50px;
+    height: 45px;
     background: #1e90ff;
     transform: rotate(-45deg);
     border-radius: 10px;
@@ -130,14 +130,14 @@ body {
 .heart::after {
     content: "";
     position: absolute;
-    width: 40px;
-    height: 36px;
+    width: 50px;
+    height: 45px;
     background: #1e90ff;
     border-radius: 50%;
 }
 
-.heart::before { top:-20px; left:0; }
-.heart::after { left:20px; top:0; }
+.heart::before { top:-22.5px; left:0; }
+.heart::after { left:25px; top:0; }
 </style>
 </head>
 <body>
@@ -203,7 +203,7 @@ function getRandomTypo(char){
     return typos[char.toLowerCase()] || char;
 }
 
-// --- HEART SYSTEM WITH REAL BOTTOM STACKING ---
+// --- HEART SYSTEM WITH REAL BOTTOM STACKING, BOUNCING LIKE BALLOONS, AND ROLLING ---
 function createHearts() {
     const heartCount = 50;
     const hearts = [];
@@ -236,7 +236,11 @@ function createHearts() {
             drift: (Math.random()*0.6 - 0.3),
             scale: scale,
             landed: false,
-            leftPercent: left
+            leftPercent: left,
+            bounceCount: 0,
+            rolling: false,
+            rollDirection: 1,
+            rollSpeed: 0.5 + Math.random() * 0.5
         });
     }
 
@@ -251,7 +255,7 @@ function createHearts() {
                 h.x += h.drift;
 
                 
-                let ground = window.innerHeight - 40*h.scale;
+                let ground = window.innerHeight - 45*h.scale; // Adjusted for new height
 
                 
                 stacks.forEach(s => {
@@ -265,16 +269,33 @@ function createHearts() {
 
                     
                     if(h.vy > 0){
-                        h.vy = -h.vy*0.4;
+                        h.vy = -h.vy*0.7; // More bouncy like balloons
+                        h.bounceCount++;
+                        if(h.bounceCount > 3) { // After a few bounces, stop bouncing
+                            h.vy = 0;
+                            h.landed = true;
+                            stacks.push({left:h.leftPercent, y:h.y - 2});
+                            h.rolling = true;
+                        }
                     } else {
                         h.vy = 0;
                         h.landed = true;
                         stacks.push({left:h.leftPercent, y:h.y - 2});
+                        h.rolling = true;
                     }
                 }
 
                 h.el.style.top = h.y + 'px';
                 h.el.style.left = h.x + 'px';
+            } else if(h.rolling) {
+                // Rolling animation: move left and right
+                h.x += h.rollDirection * h.rollSpeed;
+                if(h.x < 0 || h.x > window.innerWidth - 50) { // Adjusted for new width
+                    h.rollDirection *= -1;
+                }
+                h.el.style.left = h.x + 'px';
+                // Add slight rotation for rolling effect
+                h.el.style.transform = `rotate(${h.rollDirection * 10}deg) scale(${h.scale})`;
             }
         });
 
@@ -299,4 +320,3 @@ introOverlay.addEventListener('click',()=>{
 </script>
 </body>
 </html>
-
