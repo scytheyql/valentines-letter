@@ -188,6 +188,22 @@ body {
     opacity: 0.3;
     filter: blur(2px);
 }
+
+@media (max-width: 768px) {
+    .heart {
+        width: 50px;
+        height: 45px;
+    }
+
+    .heart::before,
+    .heart::after {
+        width: 50px;
+        height: 45px;
+    }
+
+    .heart::before { top: -22.5px; left: 0; }
+    .heart::after { left: 25px; top: 0; }
+}
 </style>
 </head>
 <body>
@@ -267,6 +283,7 @@ function createHearts() {
     const hearts = [];
     const stacks = [];
     const sparkles = [];
+    const trails = [];
 
     for (let i = 0; i < heartCount; i++) {
         const heart = document.createElement('div');
@@ -277,9 +294,12 @@ function createHearts() {
         heart.style.setProperty('--heart-color', color);
         heart.style.setProperty('--darker-color', darker);
 
-        heart.style.opacity = 0.7 + Math.random() * 0.3;
+        const opacity = 0.7 + Math.random() * 0.3;
+        heart.style.opacity = opacity;
 
-        if (Math.random() > 0.7) heart.classList.add('outlined');
+        if (Math.random() > 0.7) {
+            heart.classList.add('outlined');
+        }
 
         let left;
         if(i%2===0) left = Math.random()*15;
@@ -287,9 +307,11 @@ function createHearts() {
         else left = 20+Math.random()*60; 
         heart.style.left = left + '%';
 
+   
         const scale = 0.6 + Math.random()*0.4;
         heart.style.transform = `rotate(-45deg) scale(${scale})`;
 
+        
         let y = -50 - Math.random()*200;
 
         document.body.appendChild(heart);
@@ -370,11 +392,17 @@ function createHearts() {
             }
 
             if(!h.landed){
+               
                 h.y += h.vy;
                 h.vy += 0.05;
+
+               
                 h.x += h.drift;
 
-                let ground = window.innerHeight - 63*h.scale;
+                
+                let ground = window.innerHeight - (window.innerWidth <= 768 ? 45 : 63) * h.scale;
+
+                
                 stacks.forEach(s => {
                     if(Math.abs(s.left - h.leftPercent)<5){
                         if(ground > s.y) ground = s.y;
@@ -384,6 +412,8 @@ function createHearts() {
                 if(h.y >= ground){
                     h.y = ground;
                     createSparks(h.x, h.y);
+
+                    
                     if(h.vy > 0){
                         h.vy = -h.vy*0.7;
                         h.bounceCount++;
@@ -409,11 +439,14 @@ function createHearts() {
                 h.rollTime++;
                 const prevX = h.x;
                 h.x += h.rollDirection * h.rollSpeed;
-                if(h.x < 0 || h.x > window.innerWidth - 70) h.rollDirection *= -1;
-                h.rotation += (h.x - prevX) * 2;
+                if(h.x < 0 || h.x > window.innerWidth - (window.innerWidth <= 768 ? 50 : 70)) {
+                    h.rollDirection *= -1;
+                }
+                const deltaX = h.x - prevX;
+                h.rotation += deltaX * 2;
 
                 const textBoxRect = textBox.getBoundingClientRect();
-                const heartRect = { left: h.x, top: h.y, right: h.x + 70, bottom: h.y + 63 };
+                const heartRect = { left: h.x, top: h.y, right: h.x + (window.innerWidth <= 768 ? 50 : 70), bottom: h.y + (window.innerWidth <= 768 ? 45 : 63) };
                 if (heartRect.right > textBoxRect.left && heartRect.left < textBoxRect.right &&
                     heartRect.bottom > textBoxRect.top && heartRect.top < textBoxRect.bottom) {
                     if (h.x < textBoxRect.left) h.x -= 5;
