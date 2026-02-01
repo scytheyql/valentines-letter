@@ -340,15 +340,24 @@ function createHearts() {
         });
     }
 
-    function createSparkles(heart) {
+  function createSparkles(heart) {
+        
+        if (window.innerWidth <= 768) return;
         for (let j = 0; j < 1; j++) {
             const sparkle = document.createElement('div');
             sparkle.className = 'sparkle';
             sparkle.style.left = (heart.x + Math.random() * 70 - 35) + 'px';
             sparkle.style.top = (heart.y + Math.random() * 63 - 31.5) + 'px';
             document.body.appendChild(sparkle);
-            sparkles.push({ el: sparkle, life: 30 });
+            sparkles.push({ el: sparkle, life: 20 });
         }
+    }
+
+  
+    h.sparkleTimer++;
+    if (h.sparkleTimer > 180) {
+        createSparkles(h);
+        h.sparkleTimer = 0;
     }
 
     function createSparks(x, y) {
@@ -478,5 +487,6 @@ introOverlay.addEventListener('click',()=>{
 </script>
 </body>
 </html>
+
 
 
