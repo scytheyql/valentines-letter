@@ -248,9 +248,12 @@ const bgMusic = document.getElementById('bg-music');
 let index = 0;
 let isCorrecting = false;
 
+console.log('Script loaded, elements:', typewriterElement, introOverlay, textBox);
+
 bgMusic.volume = 0.5;
 
 function typeWriter() {
+    console.log('typeWriter called, index:', index);
     if(index < text.length){
         const char = text.charAt(index);
         if(!isCorrecting && Math.random()<0.02 && char.match(/[a-zA-Z]/)){
@@ -273,6 +276,8 @@ function typeWriter() {
             index++;
             setTimeout(typeWriter,50);
         }
+    } else {
+        console.log('Typing finished');
     }
 }
 
@@ -291,6 +296,7 @@ function getDarkerColor(color) {
 }
 
 function createHearts() {
+    console.log('createHearts called');
     const heartCount = window.innerWidth <= 768 ? 20 : 30;
     const hearts = [];
     const stacks = [];
@@ -343,6 +349,7 @@ function createHearts() {
             sparkleTimer: 0
         });
     }
+    console.log('Hearts created:', hearts.length);
 
     function createSparkles(heart) {
         if (window.innerWidth <= 768) return;
@@ -368,6 +375,7 @@ function createHearts() {
     }
 
     function animate() {
+        console.log('Animate called, hearts left:', hearts.length);
         if (hearts.length === 0) return;
 
         sparkles.forEach((s, idx) => {
@@ -385,7 +393,7 @@ function createHearts() {
             }
 
             h.sparkleTimer++;
-            if (h.sparkleTimer > 300) { // Reduced frequency: every 300 frames (~5 seconds)
+            if (h.sparkleTimer > 300) {
                 createSparkles(h);
                 h.sparkleTimer = 0;
             }
@@ -397,6 +405,7 @@ function createHearts() {
                 h.x += h.drift;
 
                 let ground = window.innerHeight - (window.innerWidth <= 768 ? 45 : 63) * h.scale;
+                console.log('Ground:', ground, 'Heart y:', h.y);
 
                 stacks.forEach(s => {
                     if(Math.abs(s.left - h.leftPercent)<5){
@@ -405,6 +414,7 @@ function createHearts() {
                 });
 
                 if(h.y >= ground){
+                    console.log('Heart landed');
                     h.y = ground;
                     if (window.innerWidth > 768) createSparks(h.x, h.y);
 
@@ -472,6 +482,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden) bgMusic.pa
 window.addEventListener('beforeunload',()=>{bgMusic.pause();});
 
 introOverlay.addEventListener('click',()=>{
+    console.log('Intro overlay clicked');
     introOverlay.style.display='none';
     textBox.style.display='block';
     textBox.classList.add('shake');
@@ -482,4 +493,5 @@ introOverlay.addEventListener('click',()=>{
 });
 </script>
 </body>
+
 </html>
